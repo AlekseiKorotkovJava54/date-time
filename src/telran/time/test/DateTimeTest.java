@@ -48,7 +48,7 @@ class DateTimeTest {
 		 for(String zoneId : zoneIds) {
 			 if(zoneId.contains(zonePart)) {
 				 ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of(zoneId));
-				 System.out.printf("%s <%s>\n",currentDateTime.format(DateTimeFormatter.ofPattern("<yyyy>-<MM>-<dd> <HH:mm>", Locale.forLanguageTag("en"))),zoneId);
+				 System.out.printf("%s <%s>\n",currentDateTime.format(DateTimeFormatter.ofPattern("<yyyy>-<MM>-<dd> <HH:mm> <zzzz>", Locale.forLanguageTag("en"))),zoneId);
 			 }
 		 }
 	}
