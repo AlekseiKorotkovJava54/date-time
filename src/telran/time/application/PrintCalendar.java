@@ -9,14 +9,14 @@ import java.time.temporal.ChronoField;
 import java.util.Locale;
 
 record MonthYear(int month, int year) {
+	
 }
-
 public class PrintCalendar {
 
-	private static final int TITLE_OFFSET = 10;
+	private static final int TITLE_OFFSET = 5;
 	private static final int COLUMN_WIDTH = 4;
-
-	public static void main(String[] args) {
+	private static DayOfWeek[] weekDays = DayOfWeek.values();
+	public static void main(String[] args)  {
 		try {
 			MonthYear monthYear = getMonthYear(args);
 			printCalendar(monthYear);
@@ -27,14 +27,14 @@ public class PrintCalendar {
 		}
 	}
 
-	private static MonthYear getMonthYear(String[] args) throws Exception{
+	private static  MonthYear getMonthYear(String[] args) throws Exception{
 		int monthNumber = getMonth(args);
 		int year = getYear(args);
 		return new MonthYear(monthNumber, year);
 	}
 
 	private static int getYear(String[] args) throws Exception {
-		int year = args.length < 2 ? getCurrentYear():getYear(args[1]);
+		int year = args.length < 2 ? getCurrentYear() : getYear(args[1]);
 		return year;
 	}
 
@@ -43,25 +43,30 @@ public class PrintCalendar {
 			int res = Integer.parseInt(yearStr);
 			return res;
 		} catch (NumberFormatException e) {
-			throw new Exception("Year must be a number");
+			throw new Exception("year must be an integer number");
 		}
 		
 	}
 
 	private static int getCurrentYear() {
+		
 		return LocalDate.now().getYear();
 	}
 
-	private static int getMonth(String[] args) throws Exception {
+	private static int getMonth(String[] args) throws Exception{
 		int month = args.length == 0 ? getCurrentMonth() : getMonthNumber(args[0]);
 		return month;
 	}
 
-	private static int getMonthNumber(String monthStr) throws Exception {
+	private static int getMonthNumber(String monthStr)throws Exception {
 		try {
 			int result = Integer.parseInt(monthStr);
-			if(result < 1) throw new Exception("Month cannot be less than 1"); 
-			if(result >12) throw new Exception("Month cannot be greater than 12"); 
+			if (result < 1) {
+				throw new Exception("Month cannot be less than 1");
+			}
+			if(result > 12) {
+				throw new Exception("Month cannot be greater than 12");
+			}
 			return result;
 		} catch (NumberFormatException e) {
 			throw new Exception("Month must be a number");
@@ -69,6 +74,7 @@ public class PrintCalendar {
 	}
 
 	private static int getCurrentMonth() {
+		
 		return LocalDate.now().get(ChronoField.MONTH_OF_YEAR);
 	}
 
@@ -76,31 +82,34 @@ public class PrintCalendar {
 		printTitle(monthYear);
 		printWeekDays();
 		printDays(monthYear);
+		
+		
 	}
 
 	private static void printDays(MonthYear monthYear) {
 		int nDays = getDaysInMonth(monthYear);
 		int currentWeekDay = getFirstDayOfMonth(monthYear);
 		int firstOffset = getFirstOffset(currentWeekDay);
-		
-		System.out.printf("%s"," ".repeat(firstOffset));
-		
-		for(int day=1; day<=nDays; day++) {
-			System.out.printf("%4d", day);
-			if(currentWeekDay == 7) {
-				currentWeekDay=0;
+		System.out.printf("%s", " ".repeat(firstOffset));
+		for(int day = 1; day <= nDays; day++) {
+			System.out.printf("%" + COLUMN_WIDTH +"d", day);
+			if(currentWeekDay == weekDays.length) {
+				currentWeekDay = 0;
 				System.out.println();
 			}
 			currentWeekDay++;
 		}
+		
 	}
 
 	private static int getFirstOffset(int currentWeekDay) {
-		return COLUMN_WIDTH*(currentWeekDay - 1);
+		
+		return COLUMN_WIDTH * (currentWeekDay - 1);
 	}
 
 	private static int getFirstDayOfMonth(MonthYear monthYear) {
-		LocalDate ld = LocalDate.of(monthYear.year(), monthYear.month(),1);
+		LocalDate ld = LocalDate.of(monthYear.year(), monthYear.month(),
+				1);
 		return ld.get(ChronoField.DAY_OF_WEEK);
 	}
 
@@ -110,13 +119,22 @@ public class PrintCalendar {
 	}
 
 	private static void printWeekDays() {
-		for(DayOfWeek weekDay: DayOfWeek.values()) 
-			System.out.printf("%4s",weekDay.getDisplayName(TextStyle.SHORT, Locale.forLanguageTag("en")));
+		System.out.printf("%s", " ".repeat(1));
+		for(DayOfWeek weekday: weekDays) {
+			System.out.printf("%" + COLUMN_WIDTH +"s",weekday.getDisplayName(TextStyle.SHORT,
+					Locale.forLanguageTag("en")));
+			
+		}
 		System.out.println();
+		
 	}
 
 	private static void printTitle(MonthYear monthYear) {
-		String monthName = Month.of(monthYear.month()).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("en"));
+		String monthName = Month.of(monthYear.month())
+				.getDisplayName(TextStyle.FULL, Locale.getDefault());
 		System.out.printf("%s%s %d\n"," ".repeat(TITLE_OFFSET), monthName, monthYear.year());
+		
+		
 	}
+
 }
