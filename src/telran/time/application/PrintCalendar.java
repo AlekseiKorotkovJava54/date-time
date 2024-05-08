@@ -13,9 +13,10 @@ record MonthYear(int month, int year) {
 }
 public class PrintCalendar {
 
-	private static final int TITLE_OFFSET = 5;
+	private static final int TITLE_OFFSET = 10;
 	private static final int COLUMN_WIDTH = 4;
 	private static DayOfWeek[] weekDays = DayOfWeek.values();
+	
 	public static void main(String[] args)  {
 		try {
 			MonthYear monthYear = getMonthYear(args);
@@ -45,11 +46,9 @@ public class PrintCalendar {
 		} catch (NumberFormatException e) {
 			throw new Exception("year must be an integer number");
 		}
-		
 	}
 
 	private static int getCurrentYear() {
-		
 		return LocalDate.now().getYear();
 	}
 
@@ -74,7 +73,6 @@ public class PrintCalendar {
 	}
 
 	private static int getCurrentMonth() {
-		
 		return LocalDate.now().get(ChronoField.MONTH_OF_YEAR);
 	}
 
@@ -82,8 +80,6 @@ public class PrintCalendar {
 		printTitle(monthYear);
 		printWeekDays();
 		printDays(monthYear);
-		
-		
 	}
 
 	private static void printDays(MonthYear monthYear) {
@@ -99,17 +95,14 @@ public class PrintCalendar {
 			}
 			currentWeekDay++;
 		}
-		
 	}
 
 	private static int getFirstOffset(int currentWeekDay) {
-		
 		return COLUMN_WIDTH * (currentWeekDay - 1);
 	}
 
 	private static int getFirstDayOfMonth(MonthYear monthYear) {
-		LocalDate ld = LocalDate.of(monthYear.year(), monthYear.month(),
-				1);
+		LocalDate ld = LocalDate.of(monthYear.year(), monthYear.month(),1);
 		return ld.get(ChronoField.DAY_OF_WEEK);
 	}
 
@@ -119,22 +112,14 @@ public class PrintCalendar {
 	}
 
 	private static void printWeekDays() {
-		System.out.printf("%s", " ".repeat(1));
 		for(DayOfWeek weekday: weekDays) {
-			System.out.printf("%" + COLUMN_WIDTH +"s",weekday.getDisplayName(TextStyle.SHORT,
-					Locale.forLanguageTag("en")));
-			
+			System.out.printf("%" + COLUMN_WIDTH +"s",weekday.getDisplayName(TextStyle.SHORT,Locale.forLanguageTag("en")));
 		}
 		System.out.println();
-		
 	}
 
 	private static void printTitle(MonthYear monthYear) {
-		String monthName = Month.of(monthYear.month())
-				.getDisplayName(TextStyle.FULL, Locale.getDefault());
+		String monthName = Month.of(monthYear.month()).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("en"));
 		System.out.printf("%s%s %d\n"," ".repeat(TITLE_OFFSET), monthName, monthYear.year());
-		
-		
 	}
-
 }
