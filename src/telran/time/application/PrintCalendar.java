@@ -8,7 +8,7 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.util.Locale;
 
-record MonthYear(int month, int year) {
+record MonthYear(int month, int year, int startWeekDay) {
 	
 }
 public class PrintCalendar {
@@ -27,11 +27,26 @@ public class PrintCalendar {
 			System.out.println(e.getMessage());
 		}
 	}
-
+	
 	private static  MonthYear getMonthYear(String[] args) throws Exception{
 		int monthNumber = getMonth(args);
 		int year = getYear(args);
-		return new MonthYear(monthNumber, year);
+		int startWeekDay = getStartWeekDay(args);
+		return new MonthYear(monthNumber, year,startWeekDay);
+	}
+
+	private static int getStartWeekDay(String[] args) throws Exception {
+		int startWeekDay = args.length<3 ? 1 : getStartWeekDay(args[2]);
+		return startWeekDay;
+	}
+
+	private static int getStartWeekDay(String string) throws Exception {
+		try {
+			int startWeekDay = DayOfWeek.valueOf(string.toUpperCase()).getValue();
+			return startWeekDay;
+		} catch (IllegalArgumentException  e) {
+			throw new Exception("the entered data is not a day of the week");
+		}
 	}
 
 	private static int getYear(String[] args) throws Exception {
@@ -78,7 +93,7 @@ public class PrintCalendar {
 
 	private static void printCalendar(MonthYear monthYear) {
 		printTitle(monthYear);
-		printWeekDays();
+		printWeekDays(monthYear);
 		printDays(monthYear);
 	}
 
@@ -98,12 +113,12 @@ public class PrintCalendar {
 	}
 
 	private static int getFirstOffset(int currentWeekDay) {
-		return COLUMN_WIDTH * (currentWeekDay - 1);
+		return COLUMN_WIDTH * (currentWeekDay-1);
 	}
 
 	private static int getFirstDayOfMonth(MonthYear monthYear) {
-		LocalDate ld = LocalDate.of(monthYear.year(), monthYear.month(),1);
-		return ld.get(ChronoField.DAY_OF_WEEK);
+		int ld = LocalDate.of(monthYear.year(), monthYear.month(),1).getDayOfWeek().getValue();
+		return ld-monthYear.startWeekDay()<0 ? ld-monthYear.startWeekDay()+8:ld-monthYear.startWeekDay()+1;
 	}
 
 	private static int getDaysInMonth(MonthYear monthYear) {
@@ -111,9 +126,10 @@ public class PrintCalendar {
 		return ym.lengthOfMonth();
 	}
 
-	private static void printWeekDays() {
-		for(DayOfWeek weekday: weekDays) {
-			System.out.printf("%" + COLUMN_WIDTH +"s",weekday.getDisplayName(TextStyle.SHORT,Locale.forLanguageTag("en")));
+	private static void printWeekDays(MonthYear monthYear) {
+		for(int i=0; i<weekDays.length;i++) {
+			int index = i + monthYear.startWeekDay() - 1 < weekDays.length ? i + monthYear.startWeekDay() - 1 : i + monthYear.startWeekDay() - 8;
+			System.out.printf("%" + COLUMN_WIDTH +"s",weekDays[index].getDisplayName(TextStyle.SHORT,Locale.forLanguageTag("en")));
 		}
 		System.out.println();
 	}
